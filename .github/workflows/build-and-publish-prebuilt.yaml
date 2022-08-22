@@ -123,4 +123,4 @@ jobs:
       run: |
         echo "running .github/workflows/scripts/docker-publish.sh"
         ./.github/workflows/scripts/docker-publish.sh
-      if: github.event_name == 'release'
+      if: github.event_name == 'release' || github.event.release.prerelease
