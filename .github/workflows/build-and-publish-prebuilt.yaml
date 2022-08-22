@@ -91,7 +91,8 @@ jobs:
     # Loads VERSION_TAG from release tag
     - name: Update VERSION_TAG with input (workflow_dispatch)
       run: |
-        echo "VERSION_TAG=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+        # TODO: Trim 'v' from the tag
+        echo "VERSION_TAG=base-${{ github.event.release.tag_name }}" >> $GITHUB_ENV
       if: github.event_name == 'release' || github.event.release.prerelease
 
     # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~- #
@@ -103,13 +104,14 @@ jobs:
         echo "VERSION_TAG=${{ github.event.inputs.image_tag}}" >> $GITHUB_ENV
       if: github.event_name == 'workflow_dispatch'
 
-    - uses: cuchi/jinja2-action@v1.2.0
+    - name: Generate the Dockerfile based on version
+      uses: cuchi/jinja2-action@v1.2.0
       with:
         template: prebuilt-config/dockerfile.template
         output_file: prebuilt-config/${{ matrix.target }}/Dockerfile
         strict: true
         variables: |
-          bitops_base=${{ env.VERSION_TAG }}
+          tags.bitops_base=${{ env.VERSION_TAG }}
       if: github.event_name == 'workflow_dispatch' || github.event_name == 'release' || github.event.release.prerelease
 
     # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~- #
