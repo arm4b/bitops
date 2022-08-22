@@ -11,8 +11,8 @@ set -e
 : ${IMAGE_TAG:? IMAGE_TAG env variable is required!}
 
 # Docker login
-echo "$DOCKER_PASS" | docker login --username="$DOCKER_USER" --password-stdin
-echo -e "\033[32mSuccessfully logged into Docker Hub Registry!\033[0m"
+#echo "$DOCKER_PASS" | docker login --username="$DOCKER_USER" --password-stdin
+#echo -e "\033[32mSuccessfully logged into Docker Hub Registry!\033[0m"
 
 ###
 # Environment setup
