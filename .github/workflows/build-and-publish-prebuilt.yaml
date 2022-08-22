@@ -16,6 +16,9 @@ on:
       - "prebuilt-config/bitops-tag.yaml"
       - ".github/workflows/build-and-publish-prebuilt.yaml"
 
+  release:
+    types: [ published ]
+
 jobs:
   # Separated workflow, as 'bitops-tags.yaml' values could be overwriten
   build-publish-dev:
