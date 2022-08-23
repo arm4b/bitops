@@ -91,8 +91,10 @@ jobs:
     # Loads VERSION_TAG from release tag
     - name: Update VERSION_TAG with input (workflow_dispatch)
       run: |
-        # TODO: Trim 'v' from the tag
-        echo "VERSION_TAG=base-${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+        # remove leading 'v' from the release tag
+        VERSION_TAG=${{ github.event.release.tag_name }}
+        [[ "${VERSION_TAG:0:1}" == "v" ]] && VERSION_TAG="${VERSION_TAG:1}"
+        echo "VERSION_TAG=$VERSION_TAG" >> $GITHUB_ENV
       if: github.event_name == 'release' || github.event.release.prerelease
 
     # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~- #
@@ -111,7 +113,7 @@ jobs:
         output_file: prebuilt-config/${{ matrix.target }}/Dockerfile
         strict: true
         variables: |
-          tags.bitops_base=${{ env.VERSION_TAG }}
+          tags.bitops_base=${{ env.VERSION_TAG }}-base
       if: github.event_name == 'workflow_dispatch' || github.event_name == 'release' || github.event.release.prerelease
 
     # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~- #
