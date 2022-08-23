@@ -1,6 +1,11 @@
 name: Build and Publish preconfigured images
 
 on:
+  workflow_run:
+    # Run when base the parent workflow is finished
+    workflows: ["Build and Publish base image"]
+    types:
+      - completed
   workflow_dispatch: 
     inputs:
       image_tag:
