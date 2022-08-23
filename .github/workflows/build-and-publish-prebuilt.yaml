@@ -1,11 +1,6 @@
 name: Build and Publish preconfigured images
 
 on:
-  workflow_run:
-    # Run when base the parent workflow is finished
-    workflows: ["Build and Publish base image"]
-    types:
-      - completed
   workflow_dispatch: 
     inputs:
       image_tag:
@@ -32,11 +27,20 @@ jobs:
     if: github.event_name == 'push'
     steps:
     - uses: actions/checkout@v2
+    # TODO: Refactor 'build base' + 'build omnibus' to be one workflow w dependencies
+    - name: Wait for the base image push
+      # https://github.com/marketplace/actions/wait-on-check
+      uses: lewagon/wait-on-check-action@v1.0.0
+      with:
+        ref: ${{ github.ref }}
+        running-workflow-name: 'Build and Publish base image'
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        wait-interval: 20
     - uses: cuchi/jinja2-action@v1.2.0
       with:
         template: prebuilt-config/dockerfile.template
         output_file: ./Dockerfile
-        variables: tags="" # uses jinja default from the dockerfile.template
+        variables: bitops_base_tag="dev-base"
     - name: Copy bitops.config.yaml into the project root folder
       run: cp ./prebuilt-config/omnibus/bitops.config.yaml ./bitops.config.yaml
     - name: Publish Omnibus dev Docker Image (Push)
@@ -63,6 +67,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    
+    # TODO: Refactor 'build base' + 'build omnibus' to be one workflow w dependencies
+    - name: Wait for the base image push
+      # https://github.com/marketplace/actions/wait-on-check
+      uses: lewagon/wait-on-check-action@v1.0.0
+      with:
+        ref: ${{ github.ref }}
+        running-workflow-name: 'Build and Publish base image'
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        wait-interval: 20    
     
     # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~- #
     #                   PUSH                   #
@@ -117,8 +131,7 @@ jobs:
         template: prebuilt-config/dockerfile.template
         output_file: prebuilt-config/${{ matrix.target }}/Dockerfile
         strict: true
-        variables: |
-          bitops_base_tag=${{ env.VERSION_TAG }}-base
+        variables: bitops_base_tag=${{ env.VERSION_TAG }}-base
       if: github.event_name == 'workflow_dispatch' || github.event_name == 'release' || github.event.release.prerelease
 
     # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~- #
