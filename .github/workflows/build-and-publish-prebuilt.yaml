@@ -113,7 +113,7 @@ jobs:
         output_file: prebuilt-config/${{ matrix.target }}/Dockerfile
         strict: true
         variables: |
-          tags.bitops_base=${{ env.VERSION_TAG }}-base
+          bitops_base_tag=${{ env.VERSION_TAG }}-base
       if: github.event_name == 'workflow_dispatch' || github.event_name == 'release' || github.event.release.prerelease
 
     # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~- #
