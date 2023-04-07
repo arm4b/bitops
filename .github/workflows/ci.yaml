@@ -4,6 +4,8 @@ on:
   push:
     branches: [main]
   pull_request:
+  release:
+    types: [published]
 
 jobs:
   # Run black linting
@@ -110,7 +112,7 @@ jobs:
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      -
+      - 
         name: Tag the base image
         id: meta
         uses: docker/metadata-action@v4
@@ -140,7 +142,7 @@ jobs:
       - 
         name: Push base Docker image
         uses: docker/build-push-action@v4
-        if: ${{ github.ref_name == 'main' }}
+        if: ${{ (github.ref_name == 'main') || (github.event_name == 'release') }}
         with:
           context: .
           tags: ${{ steps.meta.outputs.tags }}
