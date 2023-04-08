@@ -1,1 +1,1 @@
-FROM armabit/bitops:{{ tag |replace('v', '', 1) | default("dev-base") }}
+FROM armabit/bitops:{{ tag[0] | replace('v', '') }}{{ tag[1:] }}
