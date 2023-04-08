@@ -100,10 +100,10 @@ jobs:
   # Build and Push the base Docker image with no plugins
   build-base-image:
     runs-on: ubuntu-latest
-    # needs:
-    #   - lint-black
-    #   - lint-pylint
-    #   - tests-unit
+    needs:
+      - lint-black
+      - lint-pylint
+      - tests-unit
 
     steps:
       - 
@@ -186,6 +186,10 @@ jobs:
           template: prebuilt-config/dockerfile.template
           output_file: ./Dockerfile
           variables: tag=${{ github.event.release.tag_name }}-base
+      - 
+        name: Debug
+        run: cat ./Dockerfile
+      
       - 
         name: Copy bitops.config.yaml into the project root folder
         run: cp ./prebuilt-config/${{ matrix.target }}/bitops.config.yaml ./bitops.config.yaml
