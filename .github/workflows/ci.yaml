@@ -98,7 +98,7 @@ jobs:
           tox -e unit
 
   # Build and Push the base Docker image with no plugins
-  build-push-base-image:
+  build-base-image:
     runs-on: ubuntu-latest
     # needs:
     #   - lint-black
@@ -142,6 +142,8 @@ jobs:
           context: .
           tags: ${{ steps.meta.outputs.tags }}
       - 
+        # TODO: Save the image as a GitHub artifact on a PR
+        # See: https://github.com/docker/build-push-action/issues/225#issuecomment-727639184
         name: Push base Docker image
         uses: docker/build-push-action@v4
         if: ${{ (github.ref_name == 'main') || (github.event_name == 'release') }}
@@ -150,11 +152,11 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           push: true
 
-  # Build and Push the BitOps Docker image
-  build-push-prebuilt-images:
+  # Build and Push the predefined BitOps Docker image(s)
+  build-prebuilt-images:
     runs-on: ubuntu-latest
     needs:
-      - build-push-base-image
+      - build-base-image
 
     strategy:
       fail-fast: false
