@@ -185,6 +185,7 @@ jobs:
         with:
           template: prebuilt-config/dockerfile.template
           output_file: ./Dockerfile
+          # tag=v1.2.3-base -> tag=1.2.3-base is converted in the Dockerfile.template Jinja
           variables: tag=${{ github.event.release.tag_name }}-base
       - 
         name: Debug
