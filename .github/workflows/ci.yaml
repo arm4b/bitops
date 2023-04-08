@@ -157,6 +157,7 @@ jobs:
       - build-push-base-image
 
     strategy:
+      fail-fast: false
       matrix:
         target:
           - aws-ansible
@@ -188,7 +189,7 @@ jobs:
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
       - 
-        name: Tag the BitOps image
+        name: Tag the Docker image
         id: meta
         uses: docker/metadata-action@v4
         with:
@@ -216,15 +217,15 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
       - 
-        name: Build BitOps Docker image
+        name: Build Docker image
         uses: docker/build-push-action@v4
         with:
           context: .
           tags: ${{ steps.meta.outputs.tags }}
       - 
-        name: Push BitOps Docker image
+        name: Push Docker image
         uses: docker/build-push-action@v4
-        if: ${{ (github.ref_name == 'main') || (github.event_name == 'release') }}
+        if: ${{ (github.ref_name == 'main') && (matrix.target == 'omnibus') || (github.event_name == 'release') }}
         with:
           context: .
           tags: ${{ steps.meta.outputs.tags }}
