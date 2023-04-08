@@ -173,14 +173,14 @@ jobs:
         with:
           template: prebuilt-config/dockerfile.template
           output_file: ./Dockerfile
-          variables: tag="dev-base"
+          variables: tag=dev-base
       - 
         uses: cuchi/jinja2-action@v1.2.0
         if: github.event_name == 'release'
         with:
           template: prebuilt-config/dockerfile.template
           output_file: ./Dockerfile
-          variables: tag="${{ github.event.release.tag_name }}"
+          variables: tag=${{ github.event.release.tag_name }}
       - 
         name: Copy bitops.config.yaml into the project root folder
         run: cp ./prebuilt-config/${{ matrix.target }}/bitops.config.yaml ./bitops.config.yaml
